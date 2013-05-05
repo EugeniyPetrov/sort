@@ -1,13 +1,16 @@
 """Implementation of sorting algorithms
 
 Functions:
-selection_sort(a, compare) -- in-place comparsion sort.
+selection_sort(a, compare) - in-place comparsion sort.
     """
 
 def selection_sort(a, compare):
     """Selection sort implementation
 
-    Worst-case and average complexity both - O(n^2).
+    a - source array to be sorted
+    compare - compare function. compare(a, b) -> true. Must returns true
+        if a < b and false in other cases.
+
     The algorithm divides the input list into two parts: the sublist of items
     already sorted, which is built up from left to right at the front (left) of
     the list, and the sublist of items remaining to be sorted that occupy the
@@ -16,6 +19,10 @@ def selection_sort(a, compare):
     smallest (or largest, depending on sorting order) element in the unsorted
     sublist, exchanging it with the leftmost unsorted element (putting it in
     sorted order), and moving the sublist boundaries one element to the right.
+    Worst case perfomance - O(n^2)
+    Best case perfomance - O(n^2)
+    Average case perfomance - O(n^2)
+    Worst case space complexity - O(n) total, O(1) auxiliary
     (http://en.wikipedia.org/wiki/Selection_sort)"""
     for position in xrange(len(a) - 1):
         min = position
