@@ -7,7 +7,7 @@ selection_sort(a, compare) -- in-place comparsion sort.
 def selection_sort(a, compare):
     """Selection sort implementation
 
-    Time complexity - O(n^2).
+    Worst-case and average complexity both - O(n^2).
     The algorithm divides the input list into two parts: the sublist of items
     already sorted, which is built up from left to right at the front (left) of
     the list, and the sublist of items remaining to be sorted that occupy the
