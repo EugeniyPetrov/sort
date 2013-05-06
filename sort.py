@@ -1,13 +1,16 @@
 """Implementation of sorting algorithms
 
 Functions:
-selection_sort(a, compare) - in-place comparsion sort."""
+selection_sort(collection, compare) - in-place comparsion sort."""
 
-def selection_sort(a, compare):
+def compare(a, b):
+    return a < b
+
+def selection_sort(collection, compare_func=None):
     """Selection sort implementation
     
-        a - source array to be sorted
-        compare - compare function. compare(a, b) -> true. Must returns true
+        collection - source array to be sorted
+        compare_func - compare function. compare(a, b) -> true. Must returns true
             if a < b and false in other cases.
     
         The algorithm divides the input list into two parts: the sublist of items
@@ -23,23 +26,24 @@ def selection_sort(a, compare):
         Average case perfomance - O(n^2)
         Worst case space complexity - O(n) total, O(1) auxiliary
         (http://en.wikipedia.org/wiki/Selection_sort)"""
-    for position in xrange(len(a) - 1):
+
+    if compare_func is None:
+        compare_func = compare
+
+    for position in xrange(len(collection) - 1):
         min = position
-        for tail in xrange(position + 1, len(a)):
-            if compare(a[tail], a[min]):
+        for tail in xrange(position + 1, len(collection)):
+            if compare(collection[tail], collection[min]):
                 min = tail
 
         if position != min:
-            (a[position], a[min],) = (a[min], a[position])
+            collection[position], collection[min] = collection[min], collection[position]
 
-
-
-
-def buble_sort(a, compare):
+def buble_sort(collection, compare_func=None):
     """Buble sort implementation
     
-        a - source array to be sorted
-        compare - compare function. compare(a, b) -> true. Must returns true
+        collection - source array to be sorted
+        compare_func - compare function. compare(a, b) -> true. Must returns true
             if a < b and false in other cases.
     
         works by repeatedly stepping through the list to be sorted, comparing each
@@ -51,12 +55,16 @@ def buble_sort(a, compare):
         Average case perfomance - O(n^2)
         Worst case space complexity - O(1) auxiliary
         (http://en.wikipedia.org/wiki/Bubble_sort)"""
-    unsorted_head = len(a)
+
+    if compare_func is None:
+        compare_func = compare
+
+    unsorted_head = len(collection)
     while unsorted_head != 0:
         last_swap_position = 0
         for position in xrange(unsorted_head - 1):
-            if compare(a[(position + 1)], a[position]):
-                (a[position + 1], a[position],) = (a[position], a[(position + 1)])
+            if compare(collection[position + 1], collection[position]):
+                collection[position + 1], collection[position] = collection[position], collection[position + 1]
                 last_swap_position = position + 1
 
         unsorted_head = last_swap_position
