@@ -39,8 +39,8 @@ def selection_sort(collection, compare_func=None):
         if position != min:
             collection[position], collection[min] = collection[min], collection[position]
 
-def buble_sort(collection, compare_func=None):
-    """Buble sort implementation
+def bubble_sort(collection, compare_func=None):
+    """Bubble sort implementation
     
         collection - source array to be sorted
         compare_func - compare function. compare(a, b) -> true. Must returns true
