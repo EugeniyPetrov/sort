@@ -7,3 +7,6 @@ def compare (a, b):
 
 sort.selection_sort(a, compare)
 print a
+
+sort.buble_sort(a, compare)
+print a
