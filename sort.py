@@ -4,14 +4,17 @@ Functions:
 selection_sort(collection, compare) - in-place comparsion sort."""
 
 def compare(a, b):
-    return a < b
+    if a == b:
+        return 0
+    else:
+        return -1 if a < b else 1
 
 def selection_sort(collection, compare_func=None):
     """Selection sort implementation
     
-        collection - source array to be sorted
-        compare_func - compare function. compare(a, b) -> true. Must returns true
-            if a < b and false in other cases.
+        collection - source list to be sorted
+        compare_func - compare function. compare(a, b) -> int. Must return value
+            less, greater or equal to 0 if a < b, a > b or a == b respectively
     
         The algorithm divides the input list into two parts: the sublist of items
         already sorted, which is built up from left to right at the front (left) of
@@ -27,13 +30,16 @@ def selection_sort(collection, compare_func=None):
         Worst case space complexity - O(n) total, O(1) auxiliary
         (http://en.wikipedia.org/wiki/Selection_sort)"""
 
+    if not isinstance(collection, list):
+        raise TypeError('collection is not instance of list')
+
     if compare_func is None:
         compare_func = compare
 
     for position in xrange(len(collection) - 1):
         min = position
         for tail in xrange(position + 1, len(collection)):
-            if compare(collection[tail], collection[min]):
+            if compare_func(collection[tail], collection[min]) < 0:
                 min = tail
 
         if position != min:
@@ -42,9 +48,9 @@ def selection_sort(collection, compare_func=None):
 def bubble_sort(collection, compare_func=None):
     """Bubble sort implementation
     
-        collection - source array to be sorted
-        compare_func - compare function. compare(a, b) -> true. Must returns true
-            if a < b and false in other cases.
+        collection - source list to be sorted
+        compare_func - compare function. compare(a, b) -> int. Must return value
+            less, greater or equal to 0 if a < b, a > b or a == b respectively
     
         works by repeatedly stepping through the list to be sorted, comparing each
         pair of adjacent items and swapping them if they are in the wrong order.
@@ -56,6 +62,9 @@ def bubble_sort(collection, compare_func=None):
         Worst case space complexity - O(1) auxiliary
         (http://en.wikipedia.org/wiki/Bubble_sort)"""
 
+    if not isinstance(collection, list):
+        raise TypeError('collection is not instance of list')
+
     if compare_func is None:
         compare_func = compare
 
@@ -63,7 +72,7 @@ def bubble_sort(collection, compare_func=None):
     while unsorted_head != 0:
         last_swap_position = 0
         for position in xrange(unsorted_head - 1):
-            if compare(collection[position + 1], collection[position]):
+            if compare_func(collection[position + 1], collection[position]) < 0:
                 collection[position + 1], collection[position] = collection[position], collection[position + 1]
                 last_swap_position = position + 1
 
