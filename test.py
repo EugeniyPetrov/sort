@@ -22,15 +22,22 @@ class SortTestFunctions(unittest.TestCase):
             prev = item
         return True
 
-    def test_bubble_sort(self):
+    def _test_sort(self, sort_func_name):
+        sort_func = getattr(sort, sort_func_name)
         for range in self.ranges:
-            sort.bubble_sort(range)
+            sort_func(range)
             self.assertTrue(self._isSorted(range))
+        self.assertRaises(TypeError, sort_func, (1, 2, 3))
+        self.assertRaises(TypeError, sort_func, 'hello')
+
+    def test_bubble_sort(self):
+        self._test_sort('bubble_sort')
 
     def test_selection_sort(self):
-        for range in self.ranges:
-            sort.selection_sort(range)
-            self.assertTrue(self._isSorted(range))
+        self._test_sort('selection_sort')
+
+    def test_coctail_sort(self):
+        self._test_sort('coctail_sort')
 
 if __name__ == '__main__':
     unittest.main()

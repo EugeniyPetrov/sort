@@ -77,3 +77,45 @@ def bubble_sort(collection, compare_func=None):
                 last_swap_position = position + 1
 
         unsorted_head = last_swap_position
+
+def coctail_sort(collection, compare_func=None):
+    """Coctail sort implementation
+
+        collection - source list to be sorted
+        compare_func - compare function. compare(a, b) -> int. Must return value
+            less, greater or equal to 0 if a < b, a > b or a == b respectively.
+
+        Cocktail sort is a slight variation of bubble sort. It differs in that
+        instead of repeatedly passing through the list from bottom to top, it
+        passes alternately from bottom to top and then from top to bottom. It
+        can achieve slightly better performance than a standard bubble sort.
+        Worst case perfomance - O(n^2)
+        Best case perfomance - O(n)
+        Average case perfomance - O(n^2)
+        Worst case space complexity - O(1)
+        (http://en.wikipedia.org/wiki/Cocktail_sort)"""
+
+    if not isinstance(collection, list):
+        raise TypeError('collection is not instance of list')
+
+    if compare_func is None:
+        compare_func = compare
+
+    start = 0
+    end = len(collection) - 1
+
+    swaps = True
+    while swaps:
+        swaps = False
+        for position in xrange(start, end):
+            if compare_func(collection[position + 1], collection[position]) < 0:
+                collection[position + 1], collection[position] = collection[position], collection[position + 1]
+                swaps = True
+                end = position
+        if swaps:
+            swaps = False
+            for position in xrange(end, start, -1):
+                if compare_func(collection[position], collection[position - 1]) < 0:
+                    collection[position], collection[position - 1] = collection[position - 1], collection[position]
+                    swaps = True
+                    start = position
