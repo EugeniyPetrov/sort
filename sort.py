@@ -119,3 +119,35 @@ def coctail_sort(collection, compare_func=None):
                     collection[position], collection[position - 1] = collection[position - 1], collection[position]
                     swaps = True
                     start = position
+
+def insertion_sort(collection, compare_func=None):
+    """Insertion sort implementation
+
+        collection - source list to be sorted
+        compare_func - compare function. compare(a, b) -> int. Must return value
+            less, greater or equal to 0 if a < b, a > b or a == b respectively.
+
+        Insertion sort iterates, consuming one input element each repetition, and
+        growing a sorted output list. On a repetition, insertion sort removes one
+        element from the input data, finds the location it belongs within the sorted
+        list, and inserts it there. It repeats until no input elements remain.
+        Worst case perfomance - O(n^2) comparisons, swaps
+        Best case perfomance - O(n) comparisons, O(1) swaps
+        Average case perfomance - O(n^2) comparisons, swaps
+        Worst case space complexity - O(n) total, O(1) auxiary
+        (http://en.wikipedia.org/wiki/Insertion_sort)"""
+
+    if not isinstance(collection, list):
+        raise TypeError('collection is not instance of list')
+
+    if compare_func is None:
+        compare_func = compare
+
+    for index_to_rearange in xrange(1, len(collection)):
+        if compare_func(collection[index_to_rearange], collection[index_to_rearange - 1]) < 0:
+            value_to_rearange = collection[index_to_rearange]
+            hole_index = index_to_rearange
+            while compare_func(value_to_rearange, collection[hole_index - 1]) < 0 and hole_index > 0:
+                collection[hole_index] = collection[hole_index - 1]
+                hole_index -= 1
+            collection[hole_index] = value_to_rearange
