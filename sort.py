@@ -151,3 +151,73 @@ def insertion_sort(collection, compare_func=None):
                 collection[hole_index] = collection[hole_index - 1]
                 hole_index -= 1
             collection[hole_index] = value_to_rearange
+
+def _shell_gap_sequence(collection_length):
+    if collection_length > 0:
+        gap, k = None, 0
+        while gap != 1:
+            gap = collection_length / 2 ** k
+            yield gap
+            k += 1
+
+def shell_sort(collection, compare_func=None, gap_sequence=None):
+    """Shell sort implementation
+
+        collection - source list to be sorted
+        compare_func - compare function. compare(a, b) -> int. Must return value
+            less, greater or equal to 0 if a < b, a > b or a == b respectively.
+        gap_sequence - gap sequence method. One of:
+            shell - N/2^k, worst-case time complexity - O(N^2), when N=2^p
+            frank_lazarus - 2(N/2^(k+1))+1, worst-case time complexity - O(N^(3/2))
+            hibbard - 2^k-1, worst-case time complexity - O(N^(3/2))
+            papernov_stasevich - 2^k+1, worst-case time complexity - O(N^(3/2))
+            pratt - 2^p*3^q, worst-case time complexity - O(N*(log^2(N)))
+            knuth - (3^k-1)/2, worst-case time complexity - O(N^(3/2))
+            incerpi_sedgewick -,
+            sedgewick - 4^k+3*2^(k-1)+1, worst-case time complexity - O(N^(4/3))
+            sedgewick2 - 9*(4^(k-1)-2^(k-1)) + 1.4^(k+1)-6*2^k+1, worst-case time
+                complexity - O(N^(4/3))
+            gonnet_baeza_yatez -,
+            tokuda - (9^k-4^k)/(5*4^(k-1)),
+            cuira - [701, 301, 132, 57, 23, 10, 4, 1]
+        by default cuira gap sequence is used as it is most effective for array
+            with size up to 4000 elements
+
+        Shellsort is a multi-pass algorithm. Each pass is an insertion sort of the
+            sequences consisting of every h-th element for a fixed gap h (also known
+            as the increment). This is referred to as h-sorting.
+        Worst-case space complexity O(n) total, O(1) auxilary
+        (http://en.wikipedia.org/wiki/Shellsort)"""
+
+    if not isinstance(collection, list):
+        raise TypeError('collection is not instance of list')
+
+    if compare_func is None:
+        compare_func = compare
+
+    if gap_sequence is None:
+        gap_sequence = 'cuira'
+
+    collection_len = len(collection)
+
+    if gap_sequence is 'cuira':
+        gaps = [701, 301, 132, 57, 23, 10, 4, 1]
+    elif gap_sequence is 'shell':
+        gaps = _shell_gap_sequence(collection_len)
+    elif gap_sequence in ('frank_lazarus', 'hibbard', 'papernov_stasevich', 'pratt',
+        'knuth', 'incerpi_sedgewick', 'sedgewick', 'sedgewick2', 'gonnet_baeza_yatez', 'tokuda'):
+        raise NotImplementedError('Method not implemented yet')
+    else:
+        raise ValueError('Invaid gap sequence method')
+
+    for gap in gaps:
+        for sub_sequence_start in xrange(0, gap):
+            for index_to_rearange in xrange(sub_sequence_start + gap, collection_len, gap):
+                if compare_func(collection[index_to_rearange], collection[index_to_rearange - gap]) < 0:
+                    value_to_rearange = collection[index_to_rearange]
+                    hole_index = index_to_rearange
+                    while compare_func(value_to_rearange, collection[hole_index - gap]) < 0 and hole_index > sub_sequence_start:
+                        collection[hole_index] = collection[hole_index - gap]
+                        hole_index -= gap
+                    collection[hole_index] = value_to_rearange
+
