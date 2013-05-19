@@ -104,20 +104,20 @@ def coctail_sort(collection, compare_func=None):
     start = 0
     end = len(collection) - 1
 
-    swaps = True
-    while swaps:
-        swaps = False
+    sorted = False
+    while not sorted:
+        sorted = True
         for position in xrange(start, end):
             if compare_func(collection[position + 1], collection[position]) < 0:
                 collection[position + 1], collection[position] = collection[position], collection[position + 1]
-                swaps = True
+                sorted = False
                 end = position
-        if swaps:
-            swaps = False
+        if not sorted:
+            sorted = True
             for position in xrange(end, start, -1):
                 if compare_func(collection[position], collection[position - 1]) < 0:
                     collection[position], collection[position - 1] = collection[position - 1], collection[position]
-                    swaps = True
+                    sorted = False
                     start = position
 
 def insertion_sort(collection, compare_func=None):
