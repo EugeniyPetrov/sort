@@ -68,5 +68,8 @@ class SortTestFunctions(unittest.TestCase):
     def test_shell_sort_cuira_gap(self):
         self._test_sort('shell_sort', 'cuira')
 
+    def test_comb_sort(self):
+        self._test_sort('comb_sort')
+
 if __name__ == '__main__':
     unittest.main()

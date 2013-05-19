@@ -221,3 +221,45 @@ def shell_sort(collection, compare_func=None, gap_sequence=None):
                         hole_index -= gap
                     collection[hole_index] = value_to_rearange
 
+def comb_sort(collection, compare_func=None):
+    """Comb sort implementation
+
+        collection - source list to be sorted
+        compare_func - compare function. compare(a, b) -> int. Must return value
+            less, greater or equal to 0 if a < b, a > b or a == b respectively.
+
+        Comb sort improves on bubble sort. In bubble sort, when any two elements
+        are compared, they always have a gap (distance from each other) of 1.
+        The basic idea of comb sort is that the gap can be much more than 1.
+        The gap starts out as the length of the list being sorted divided by
+        the shrink factor (generally 1.3), and the list is sorted with that value
+        (rounded down to an integer if needed) as the gap. Then the gap is divided
+        by the shrink factor again, the list is sorted with this new gap, and the
+        process repeats until the gap is 1. At this point, comb sort continues
+        using a gap of 1 until the list is fully sorted. The final stage of the
+        sort is thus equivalent to a bubble sort, but by this time most turtles
+        have been dealt with, so a bubble sort will be efficient.
+        (http://en.wikipedia.org/wiki/Comb_sort)"""
+
+    if not isinstance(collection, list):
+        raise TypeError('collection is not instance of list')
+
+    if compare_func is None:
+        compare_func = compare
+
+    collection_len = len(collection)
+    gap = collection_len
+    shrink_factor = 1.3
+    sorted = False
+
+    while not sorted or gap is not 1:
+        sorted = True
+        gap = int(gap / shrink_factor)
+        if gap < 1:
+            gap = 1
+
+        for sub_sequence_start in xrange(0, gap):
+            for position in xrange(sub_sequence_start + gap, collection_len, gap):
+                if compare_func(collection[position], collection[position - gap]) < 0:
+                    collection[position], collection[position - gap] = collection[position - gap], collection[position]
+                    sorted = False
