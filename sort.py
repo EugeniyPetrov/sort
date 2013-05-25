@@ -4,6 +4,11 @@ Functions:
 selection_sort(collection, compare) - in-place comparsion sort."""
 
 def compare(a, b):
+    """Default compare method for integer items.
+
+    Compare integer a and b and return integer value less, greater or equal to 0
+    if a < b, a > b or a == b respectively"""
+
     if a == b:
         return 0
     else:
@@ -263,3 +268,126 @@ def comb_sort(collection, compare_func=None):
                 if compare_func(collection[position], collection[position - gap]) < 0:
                     collection[position], collection[position - gap] = collection[position - gap], collection[position]
                     sorted = False
+
+def _merge(collection, buffer, left_seq, right_seq, compare_func):
+    """Merge 2 sub-sequences from collection specified by left_seq and right_seq and put them to the buffer
+        list at the same positions.
+
+        left_seq and right_seq are tuples like (from, to)
+        collection - list of sub-sequences
+        buffer - list to be populated by merge result
+        compare_func - function to compare items at the begining of sub-sequences
+
+        Merge is done by getting the first elements of both sub-sequences, compare them with compare_func and
+        produce new sequence with less elements. Thereby if sub-sequences are sorted then produced by merge list
+        will also be sorted.
+        Used by merge sort algorithm."""
+
+    left_from, left_to = left_seq[0], left_seq[1]
+    right_from, right_to = right_seq[0], right_seq[1]
+
+    if not isinstance(collection, list) or not isinstance(buffer, list):
+        raise TypeError('collection and buffer must be an instances of list')
+
+    if not isinstance(left_seq, tuple) or not isinstance(right_seq, tuple):
+        raise TypeError('left_seq and right_seq must be an instances of tuple')
+
+    if left_from < 0 or right_from < 0 or left_to >= len(collection) or right_to >= len(collection):
+        raise ValueError('sub-sequences must be inside of collection')
+
+    if right_from - left_to != 1:
+        raise ValueError('right_seq must be right after left_seq')
+
+    if left_to < left_from or right_to < right_from:
+        raise ValueError('Invalid sub-sequences')
+
+    if len(collection) != len(buffer):
+        raise ValueError('both colleciton and buffer must me the same length')
+
+    for i in xrange(left_from, right_to + 1):
+        next_item = None
+        if left_from > left_to:
+            next_item = right_from
+            right_from += 1
+        elif right_from > right_to:
+            next_item = left_from
+            left_from += 1
+
+        if next_item is None:
+            if compare_func(collection[right_from], collection[left_from]) < 0:
+                next_item = right_from
+                right_from += 1
+            else:
+                next_item = left_from
+                left_from += 1
+
+        buffer[i] = collection[next_item]
+
+def _get_sorted_sequences(collection, compare_func):
+    """Sorted sub-sequences generator
+
+        Find sorted sub-sequences on collection and generates a tuples with positions
+        of sub-sequences in (from, to) format"""
+    if not isinstance(collection, list):
+        raise TypeError('collection is not instance of list')
+
+    collection_len = len(collection)
+    if collection_len > 0:
+        seq_start = 0
+        for i in xrange(1, collection_len):
+            if compare_func(collection[i], collection[i - 1]) < 0:
+                yield (seq_start, i - 1)
+                seq_start = i
+        yield (seq_start, collection_len - 1)
+
+def merge_sort(collection, compare_func=None):
+    """Natutal merge sort implementation
+
+        collection - source list to be sorted
+        compare_func - compare function. compare(a, b) -> int. Must return value
+            less, greater or equal to 0 if a < b, a > b or a == b respectively.
+
+        Algorithm is done by divide the unsorted list into N sorted subslists, and
+        then repeatedly merge them to produce new sorted sublists until only 1
+        sublist remaining. This will be the sorted list.
+        Worst case performance - O(n log n)
+        Best case performance - O(n)
+        Average case performance - O(n log n)
+        Worst case space complexity - O(n) auxilary
+        (http://en.wikipedia.org/wiki/Merge_sort)"""
+
+    if not isinstance(collection, list):
+        raise TypeError('collection is not instance of list')
+
+    if compare_func is None:
+        compare_func = compare
+
+    work = collection
+    buffer = None
+
+    is_sorted = False
+    while not is_sorted:
+        first_seq = None
+        sequences_count = 0
+        for seq in _get_sorted_sequences(work, compare_func):
+            if first_seq is None:
+                first_seq = seq
+            else:
+                # allocate memory for buffer only before merge. (no merge needed if already sorted)
+                if buffer is None:
+                    buffer = [None] * len(collection)
+                _merge(work, buffer, first_seq, seq, compare_func)
+                first_seq = None
+
+            sequences_count += 1
+
+        if sequences_count > 1 and sequences_count % 2 == 1:
+            buffer[first_seq[0]:first_seq[1] + 1] = collection[first_seq[0]:first_seq[1] + 1]
+
+        if sequences_count <= 2:
+            is_sorted = True
+        else:
+            work, buffer = buffer, work
+
+    if buffer is not None and buffer is not collection:
+        collection[:] = buffer[:]
